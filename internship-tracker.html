@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internship Application Tracker</title>
+  <style>
+    :root { --navy: #1d2d44; --blue: #44799c; --gold: #d69a3b; --green: #3d8769; --ink: #27333d; --muted: #71808b; --line: #dfe5e8; --paper: #fff; --bg: #eef2f1; --shadow: 0 14px 30px rgba(29, 45, 68, .1); }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); font-family: Arial, sans-serif; background: linear-gradient(145deg, #edf3f1, #f8f8f5); }
+    .container { max-width: 1150px; margin: auto; padding: 26px 20px 44px; }
+    header { position: relative; overflow: hidden; padding: 34px 36px; color: #fff; border-radius: 5px; background: var(--navy); box-shadow: var(--shadow); }
+    header::after { content: ""; position: absolute; width: 180px; height: 180px; right: -40px; top: -70px; border: 28px solid rgba(214, 154, 59, .35); border-radius: 50%; }
+    .eyebrow { margin: 0 0 9px; color: #f0c978; font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { margin: 0 0 9px; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; }
+    header p:last-child { margin: 0; color: #d8e2e9; }
+    .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 22px 0; }
+    .stat { padding: 19px; border-top: 4px solid var(--navy); background: var(--paper); box-shadow: var(--shadow); }
+    .stat:nth-child(2) { border-color: var(--blue); } .stat:nth-child(3) { border-color: var(--gold); } .stat:nth-child(4) { border-color: var(--green); }
+    .stat-label { color: var(--muted); font-size: .76rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .stat-value { display: block; margin-top: 8px; color: var(--navy); font-size: 2rem; }
+    .helper-panel { margin: 22px 0; padding: 18px 20px; border: 1px solid #cfe0e4; background: #f4f8f7; }
+    .helper-panel h2 { margin-bottom: 10px; font-size: 1.05rem; }
+    .helper-panel ul { margin: 0; padding-left: 20px; color: var(--muted); line-height: 1.8; }
+    .layout { display: grid; grid-template-columns: 320px 1fr; gap: 22px; align-items: start; }
+    .panel { padding: 24px; background: var(--paper); box-shadow: var(--shadow); }
+    h2 { margin: 0 0 20px; color: var(--navy); font-size: 1.35rem; }
+    form { display: grid; gap: 13px; } label { display: grid; gap: 6px; color: var(--muted); font-size: .8rem; font-weight: 700; }
+    input, select, button { font: inherit; } input, select { width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 3px; color: var(--ink); background: #fff; }
+    input:focus, select:focus { outline: 2px solid #bcd6e0; border-color: var(--blue); }
+    button { padding: 11px 15px; border: 0; border-radius: 3px; cursor: pointer; font-size: .9rem; font-weight: 700; }
+    .primary { margin-top: 5px; color: #fff; background: var(--blue); } .primary:hover { background: var(--navy); }
+    .form-actions { display: flex; gap: 8px; margin-top: 5px; }
+    .secondary { color: var(--navy); background: #e9f0ef; }
+    .toolbar { display: flex; gap: 10px; margin-bottom: 18px; } .toolbar input { flex: 1; } .toolbar select { max-width: 170px; }
+    .application-list { display: grid; gap: 12px; }
+    .application { display: grid; grid-template-columns: 1fr auto; gap: 13px; padding: 17px; border: 1px solid var(--line); border-left: 5px solid var(--blue); background: #fff; }
+    .application.selected { border-left-color: var(--green); } .application.interviewed { border-left-color: var(--gold); }
+    .role { margin: 0 0 5px; color: var(--navy); font-size: 1.1rem; } .company { margin: 0 0 12px; color: var(--muted); }
+    .meta { display: flex; flex-wrap: wrap; gap: 7px; color: var(--muted); font-size: .8rem; } .meta span { padding: 6px 8px; background: #f1f4f3; }
+    .status { align-self: start; padding: 6px 9px; border-radius: 20px; font-size: .7rem; font-weight: 700; text-transform: uppercase; }
+    .status-applied { color: #285875; background: #dcecf3; } .status-interviewed { color: #895e12; background: #fff0c9; } .status-selected { color: #286249; background: #d9eee3; }
+    .actions { grid-column: 1 / -1; display: flex; gap: 8px; } .advance { color: #fff; background: var(--green); } .remove { color: #a34b43; background: #fae8e5; }
+    .empty { padding: 34px 10px; color: var(--muted); text-align: center; font-style: italic; } [hidden] { display: none; }
+    @media (max-width: 800px) { .summary { grid-template-columns: repeat(2, 1fr); } .layout { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) { .container { padding: 14px 12px 30px; } header { padding: 28px 22px; } .toolbar { flex-direction: column; } .toolbar select { max-width: none; } .application { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <p class="eyebrow">Career workspace</p>
+      <h1>Internship Tracker</h1>
+      <p>Organize every application from first click to final offer.</p>
+    </header>
+    <section class="helper-panel">
+      <h2>How this tracker helps</h2>
+      <ul><li>Keep every internship application and contact in one place.</li><li>Move applications from Applied to Interviewed and Selected as you progress.</li><li>Review your career pipeline quickly with live summary counts.</li></ul>
+    </section>
+
+    <section class="summary" aria-label="Application summary">
+      <div class="stat"><span class="stat-label">Total applications</span><strong class="stat-value" id="totalCount">0</strong></div>
+      <div class="stat"><span class="stat-label">Applied</span><strong class="stat-value" id="appliedCount">0</strong></div>
+      <div class="stat"><span class="stat-label">Interviewed</span><strong class="stat-value" id="interviewedCount">0</strong></div>
+      <div class="stat"><span class="stat-label">Selected</span><strong class="stat-value" id="selectedCount">0</strong></div>
+    </section>
+
+    <section class="layout">
+      <section class="panel">
+        <h2>Add application</h2>
+        <form id="applicationForm">
+          <label>Company <input id="company" required placeholder="e.g. Infosys"></label>
+          <label>Internship role <input id="role" required placeholder="e.g. Frontend Developer"></label>
+          <label>Applicant name <input id="applicant" required placeholder="Your name"></label>
+          <label>Application date <input id="applicationDate" type="date" required></label>
+          <label>Stage <select id="stage"><option>Applied</option><option>Interviewed</option><option>Selected</option></select></label>
+          <div class="form-actions"><button class="primary" type="submit">Add application</button><button class="secondary" type="reset">Reset</button></div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Application board</h2>
+        <div class="toolbar"><input id="search" type="search" placeholder="Search company, role, or applicant" aria-label="Search applications"><select id="filter" aria-label="Filter applications"><option>All stages</option><option>Applied</option><option>Interviewed</option><option>Selected</option></select></div>
+        <div class="application-list" id="applicationList"></div>
+        <p class="empty" id="emptyState">No applications match your search.</p>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const defaultApplications = [
+      { id: 1, company: "Microsoft", role: "Software Engineering Intern", applicant: "Naveen", date: "2026-08-10", stage: "Interviewed" },
+      { id: 2, company: "Infosys", role: "Frontend Developer Intern", applicant: "Naveen", date: "2026-08-16", stage: "Applied" },
+      { id: 3, company: "TCS", role: "Data Analyst Intern", applicant: "Naveen", date: "2026-08-04", stage: "Selected" }
+    ];
+    const storageKey = "internshipApplicationTracker";
+    let applications = JSON.parse(localStorage.getItem(storageKey)) || defaultApplications;
+    const form = document.getElementById("applicationForm");
+    const list = document.getElementById("applicationList");
+    const emptyState = document.getElementById("emptyState");
+    const search = document.getElementById("search");
+    const filter = document.getElementById("filter");
+    const stages = ["Applied", "Interviewed", "Selected"];
+    function saveApplications() { localStorage.setItem(storageKey, JSON.stringify(applications)); }
+    function escapeHtml(value) { return value.replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#039;" }[character])); }
+    function formatDate(value) { return new Date(value + "T00:00:00").toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }); }
+    function render() {
+      const term = search.value.toLowerCase().trim();
+      const selectedFilter = filter.value;
+      const visible = applications.filter(item => [item.company, item.role, item.applicant].join(" ").toLowerCase().includes(term) && (selectedFilter === "All stages" || item.stage === selectedFilter));
+      list.innerHTML = visible.map(item => `<article class="application ${item.stage.toLowerCase()}">
+        <div><h3 class="role">${escapeHtml(item.role)}</h3><p class="company">${escapeHtml(item.company)}</p><div class="meta"><span>Applicant: ${escapeHtml(item.applicant)}</span><span>Applied: ${formatDate(item.date)}</span></div></div>
+        <span class="status status-${item.stage.toLowerCase()}">${item.stage}</span>
+        <div class="actions">${item.stage !== "Selected" ? `<button class="advance" onclick="advanceStage(${item.id})">Move to ${stages[stages.indexOf(item.stage) + 1]}</button>` : ""}<button class="remove" onclick="removeApplication(${item.id})">Remove</button></div>
+      </article>`).join("");
+      emptyState.hidden = visible.length !== 0;
+      document.getElementById("totalCount").textContent = applications.length;
+      stages.forEach(stage => { document.getElementById(stage.toLowerCase() + "Count").textContent = applications.filter(item => item.stage === stage).length; });
+    }
+    function advanceStage(id) { const item = applications.find(application => application.id === id); if (item) { item.stage = stages[stages.indexOf(item.stage) + 1]; saveApplications(); render(); } }
+    function removeApplication(id) { const index = applications.findIndex(item => item.id === id); if (index !== -1 && confirm("Remove this application?")) { applications.splice(index, 1); saveApplications(); render(); } }
+    form.addEventListener("submit", event => { event.preventDefault(); applications.unshift({ id: Date.now(), company: company.value.trim(), role: role.value.trim(), applicant: applicant.value.trim(), date: applicationDate.value, stage: stage.value }); saveApplications(); form.reset(); render(); });
+    search.addEventListener("input", render); filter.addEventListener("change", render); render();
+  </script>
+</body>
+</html>
